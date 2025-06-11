@@ -32,6 +32,7 @@ const prisma = new PrismaClient()
 //     console.log(newMovie);
 // }
 
+// Create multiple movies
 async function CreateMultipleMovies() {
    const newMovie = await prisma.movie.createMany({
     data: [
@@ -61,11 +62,14 @@ async function CreateMultipleMovies() {
 
    console.log(newMovie);
 }
+
+// Get all movies
 async function getAllMovies() {
     const movies = await prisma.movie.findMany();
     console.log("All movies", movies);
 }
 
+// Get movie by id
 async function getMovieById(movieId: number) {
     const movie = await prisma.movie.findUnique({
         where: {id: movieId },
@@ -74,22 +78,47 @@ async function getMovieById(movieId: number) {
     
 }
 
-    
+// Update movie
+async function updateMovie(
+    movieId:number,
+    updatedTitle : string,
+    updatedDescription : string,
+){
+    const updateMovie = await prisma.movie.update({
+        where : {id: movieId}, 
+        data : {
+            title: updatedTitle,
+            description:updatedDescription,
+        }
+    })
+    console.log("Updated movie", updateMovie);
+}
 
+// Delete movie
+async function deleteMovie(movieId: number){
+    const deleteMovie = await prisma.movie.delete({
+        where : {id: movieId},
+    })
+    console.log("Deleted movie", deleteMovie);
+}
+    
+// Main function -> create, read, update, delete.
 async function main() {
-    // C.R.U.D
-//    await  createMovie();
-// await CreateMultipleMovies();
-// await getAllMovies();
-await getMovieById(2);
+    // C.R.U.D -> Create, Read, Update, Delete
+//    await  createMovie();      ->>>> // Create a movie
+// await CreateMultipleMovies(); ->>>> // Create multiple movies
+// await getAllMovies();         ->>>> // Get all movies
+// await getMovieById(2);        ->>>> // Get movie by id
+// await updateMovie(2, "The Matrix Second", "A movie you have to see" ) ->>>>>> // Update movie
+await deleteMovie(2);        //  ->>>>   Delete movie
 }
 
 
 main()
-.then(async()=> await prisma.$disconnect())
-.catch(async(e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
+.then(async()=> await prisma.$disconnect()) // ->>>> Disconnect the database
+.catch(async(e) => { // ->>>> Catch any error
+    console.error(e); // ->>>> Log the error
+    await prisma.$disconnect(); // ->>>> Disconnect the database
+    process.exit(1); // ->>>> Exit the process
 })
     
